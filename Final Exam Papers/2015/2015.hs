@@ -39,12 +39,17 @@ r xs = (duration `div` 60) `mod` 12 + 1
 -- 2a
 
 f :: String -> String
-f = undefined
+f "" = ""
+f (x:xs) = x:[ y | (x,y) <- zip (x:xs) xs, x /= y]
 
 -- 2b
 
 g :: String -> String
-g = undefined
+g "" = ""
+g [x] = [x]
+g (x:y:xs)
+    | x == y = g (x:xs)
+    | otherwise = x : g (y:xs)
 
 -- Question 3
 
@@ -106,9 +111,14 @@ r6 = Seq (Seq Epsilon Epsilon)
 -- 3a
 
 language :: Regexp -> [String]
-language = undefined
+language Epsilon = [""]
+language (Lit c) = [[c]]
+language (Seq r1 r2) = nub [s1++s2 | s1 <- language r1, s2 <- language r2]
+language (Or r1 r2) = nub (language r1 ++ language r2)
 
 -- 3b
 
 simplify :: Regexp -> Regexp
-simplify = undefined
+simplify (Seq Epsilon r2)= r2
+simplify (Seq r1 Epsilon) = r1
+simplify () 
